@@ -1,0 +1,1784 @@
+{
+	"info": {
+		"_postman_id": "6c20f14b-d21f-457c-86c3-2e00487343be",
+		"name": "fakeapi Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19633386"
+	},
+	"item": [
+		{
+			"name": "Products Tests",
+			"item": [
+				{
+					"name": "Get All Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verificar que el estado de la respuesta es 200\r",
+									"pm.test(\"Response status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el cuerpo de la respuesta es un array\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Verificar que cada producto tiene los campos obligatorios\r",
+									"pm.test(\"Each product has required fields with correct types\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"\r",
+									"    jsonData.forEach((product) => {\r",
+									"        pm.expect(product).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"        pm.expect(product).to.have.property(\"title\").that.is.a(\"string\");\r",
+									"        pm.expect(product).to.have.property(\"price\").that.is.a(\"number\");\r",
+									"        pm.expect(product).to.have.property(\"description\").that.is.a(\"string\");\r",
+									"        pm.expect(product).to.have.property(\"category\").that.is.a(\"string\");\r",
+									"        pm.expect(product).to.have.property(\"image\").that.is.a(\"string\");\r",
+									"        pm.expect(product.image).to.match(/^https?:\\/\\/.+/);\r",
+									"\r",
+									"        pm.expect(product).to.have.property(\"rating\").that.is.an(\"object\");\r",
+									"        pm.expect(product.rating).to.have.property(\"rate\").that.is.a(\"number\");\r",
+									"        pm.expect(product.rating).to.have.property(\"count\").that.is.a(\"number\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Verificar que hay al menos un producto en la respuesta\r",
+									"pm.test(\"Response contains at least one product\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.be.greaterThan(0);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el tiempo de respuesta es menor a 500 ms\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el encabezado 'Content-Type' es 'application/json'\r",
+									"pm.test(\"Content-Type is application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", /application\\/json/);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el encabezado 'Cache-Control' está presente\r",
+									"pm.test(\"Cache-Control header is present\", function () {\r",
+									"    pm.response.to.have.header(\"Cache-Control\");\r",
+									"});\r",
+									"\r",
+									"// Verificar si el encabezado 'X-Powered-By' está presente (opcional)\r",
+									"pm.test(\"X-Powered-By header is present (optional)\", function () {\r",
+									"    pm.response.to.have.header(\"X-Powered-By\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{products_path}}",
+							"host": [
+								"{{base_url}}{{products_path}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sort Results",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verificar que el estado de la respuesta es 200\r",
+									"pm.test(\"Response status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el encabezado 'Content-Type' es 'application/json'\r",
+									"pm.test(\"Content-Type is application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", /application\\/json/);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el tiempo de respuesta es menor a 500 ms\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el cuerpo de la respuesta es un array\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Verificar que los productos están ordenados en orden descendente por 'id'\r",
+									"pm.test(\"Products are sorted in descending order by id\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    for (let i = 0; i < jsonData.length - 1; i++) {\r",
+									"        pm.expect(jsonData[i].id).to.be.above(jsonData[i + 1].id);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Verificar que cada producto tiene los campos requeridos y tipos correctos\r",
+									"pm.test(\"Each product has required fields with correct types\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"\r",
+									"    jsonData.forEach((product) => {\r",
+									"        pm.expect(product).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"        pm.expect(product).to.have.property(\"title\").that.is.a(\"string\");\r",
+									"        pm.expect(product).to.have.property(\"price\").that.is.a(\"number\");\r",
+									"        pm.expect(product).to.have.property(\"description\").that.is.a(\"string\");\r",
+									"        pm.expect(product).to.have.property(\"category\").that.is.a(\"string\");\r",
+									"        pm.expect(product).to.have.property(\"image\").that.is.a(\"string\");\r",
+									"        pm.expect(product.image).to.match(/^https?:\\/\\/.+/);\r",
+									"\r",
+									"        pm.expect(product).to.have.property(\"rating\").that.is.an(\"object\");\r",
+									"        pm.expect(product.rating).to.have.property(\"rate\").that.is.a(\"number\");\r",
+									"        pm.expect(product.rating).to.have.property(\"count\").that.is.a(\"number\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Verificar que hay al menos 3 productos en la respuesta\r",
+									"pm.test(\"Response contains at least 3 products\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.be.greaterThan(2);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{products_path}}?sort=desc",
+							"host": [
+								"{{base_url}}{{products_path}}"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Products Results Limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verificar que el estado de la respuesta es 200\r",
+									"pm.test(\"Response status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el encabezado 'Content-Type' es 'application/json'\r",
+									"pm.test(\"Content-Type is application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", /application\\/json/);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el tiempo de respuesta es menor a 500 ms\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el cuerpo de la respuesta es un array\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Obtener el valor dinámico de limit desde la URL\r",
+									"const limit = pm.request.url.query.find(q => q.key === \"limit\").value;\r",
+									"\r",
+									"// Validar que el body es un array con `limit` elementos\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(`Response is an array with ${limit} elements`, function () {\r",
+									"    pm.expect(responseBody).to.be.an(\"array\").with.lengthOf(parseInt(limit, 10));\r",
+									"});\r",
+									"\r",
+									"// Verificar que cada producto tiene los campos requeridos y tipos correctos\r",
+									"pm.test(\"Each product has required fields with correct types\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"\r",
+									"    jsonData.forEach((product) => {\r",
+									"        pm.expect(product).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"        pm.expect(product).to.have.property(\"title\").that.is.a(\"string\");\r",
+									"        pm.expect(product).to.have.property(\"price\").that.is.a(\"number\");\r",
+									"        pm.expect(product).to.have.property(\"description\").that.is.a(\"string\");\r",
+									"        pm.expect(product).to.have.property(\"category\").that.is.a(\"string\");\r",
+									"        pm.expect(product).to.have.property(\"image\").that.is.a(\"string\");\r",
+									"        pm.expect(product.image).to.match(/^https?:\\/\\/.+/);\r",
+									"\r",
+									"        pm.expect(product).to.have.property(\"rating\").that.is.an(\"object\");\r",
+									"        pm.expect(product.rating).to.have.property(\"rate\").that.is.a(\"number\");\r",
+									"        pm.expect(product.rating).to.have.property(\"count\").that.is.a(\"number\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{products_path}}?limit=6",
+							"host": [
+								"{{base_url}}{{products_path}}"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products by Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verificar que el estado de la respuesta es 200\r",
+									"pm.test(\"Response status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el encabezado 'Content-Type' es 'application/json'\r",
+									"pm.test(\"Content-Type is application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", /application\\/json/);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el tiempo de respuesta sea menor a 500ms\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"// Verificar que el cuerpo de la respuesta sea un array\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Verificar que la respuesta contiene productos de la categoría 'jewelery'\r",
+									"pm.test(\"Response contains products from the 'jewelery' category\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    jsonData.forEach((product) => {\r",
+									"        pm.expect(product.category).to.equal(\"jewelery\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Verificar que cada producto tiene los campos requeridos con los tipos correctos\r",
+									"pm.test(\"Each product has required fields with correct types\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"\r",
+									"    jsonData.forEach((product) => {\r",
+									"        pm.expect(product).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"        pm.expect(product).to.have.property(\"title\").that.is.a(\"string\");\r",
+									"        pm.expect(product).to.have.property(\"price\").that.is.a(\"number\");\r",
+									"        pm.expect(product).to.have.property(\"description\").that.is.a(\"string\");\r",
+									"        pm.expect(product).to.have.property(\"category\").that.is.a(\"string\").that.equals(\"jewelery\");\r",
+									"        pm.expect(product).to.have.property(\"image\").that.is.a(\"string\");\r",
+									"        pm.expect(product.image).to.match(/^https?:\\/\\/.+/); // Verificar que la URL de la imagen sea válida\r",
+									"\r",
+									"        pm.expect(product).to.have.property(\"rating\").that.is.an(\"object\");\r",
+									"        pm.expect(product.rating).to.have.property(\"rate\").that.is.a(\"number\");\r",
+									"        pm.expect(product.rating).to.have.property(\"count\").that.is.a(\"number\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Verificar que la URL utiliza la variable 'base_url'\r",
+									"pm.test(\"URL uses base_url variable\", function () {\r",
+									"    const requestUrl = pm.request.url.toString();\r",
+									"    pm.expect(requestUrl).to.include(\"{{base_url}}\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{products_path}}/category/jewelery",
+							"host": [
+								"{{base_url}}{{products_path}}"
+							],
+							"path": [
+								"category",
+								"jewelery"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add a New Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el body contiene los campos esperados\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(\"Response body contains expected fields\", function () {\r",
+									"    pm.expect(responseBody).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"    pm.expect(responseBody).to.have.property(\"title\", \"test product\");\r",
+									"    pm.expect(responseBody).to.have.property(\"price\", 13.5);\r",
+									"    pm.expect(responseBody).to.have.property(\"description\", \"lorem ipsum set\");\r",
+									"    pm.expect(responseBody).to.have.property(\"image\", \"https://i.pravatar.cc\");\r",
+									"    pm.expect(responseBody).to.have.property(\"category\", \"electronic\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta sea menor a 1 segundo\r",
+									"pm.test(\"Response time is less than 1s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"test product\",\r\n    \"price\": 13.5,\r\n    \"description\": \"lorem ipsum set\",\r\n    \"image\": \"https://i.pravatar.cc\",\r\n    \"category\": \"electronic\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{products_path}}",
+							"host": [
+								"{{base_url}}{{products_path}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el body contiene los campos esperados\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(\"Response body contains expected fields\", function () {\r",
+									"    pm.expect(responseBody).to.have.property(\"id\", 7);\r",
+									"    pm.expect(responseBody).to.have.property(\"title\", \"test product\");\r",
+									"    pm.expect(responseBody).to.have.property(\"price\", 13.5);\r",
+									"    pm.expect(responseBody).to.have.property(\"description\", \"lorem ipsum set\");\r",
+									"    pm.expect(responseBody).to.have.property(\"image\", \"https://i.pravatar.cc\");\r",
+									"    pm.expect(responseBody).to.have.property(\"category\", \"electronic\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta sea menor a 1 segundo\r",
+									"pm.test(\"Response time is less than 1s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"test product\",\r\n    \"price\": 13.5,\r\n    \"description\": \"lorem ipsum set\",\r\n    \"image\": \"https://i.pravatar.cc\",\r\n    \"category\": \"electronic\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{products_path}}/7",
+							"host": [
+								"{{base_url}}{{products_path}}"
+							],
+							"path": [
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el body contiene los campos esperados\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(\"Response body contains expected fields\", function () {\r",
+									"    pm.expect(responseBody).to.have.property(\"id\", 6);\r",
+									"    pm.expect(responseBody).to.have.property(\"title\", \"Solid Gold Petite Micropave \");\r",
+									"    pm.expect(responseBody).to.have.property(\"price\", 168);\r",
+									"    pm.expect(responseBody).to.have.property(\"category\", \"jewelery\");\r",
+									"    pm.expect(responseBody).to.have.property(\"description\");\r",
+									"    pm.expect(responseBody).to.have.property(\"image\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta sea menor a 1 segundo\r",
+									"pm.test(\"Response time is less than 1s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{products_path}}/6",
+							"host": [
+								"{{base_url}}{{products_path}}"
+							],
+							"path": [
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Carts Tests",
+			"item": [
+				{
+					"name": "Get All Carts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el body contiene un array\r",
+									"pm.test(\"Response body is an array\", function () {\r",
+									"    const responseBody = pm.response.json();\r",
+									"    pm.expect(responseBody).to.be.an(\"array\");\r",
+									"    pm.expect(responseBody.length).to.be.above(0); // Verifica que no esté vacío\r",
+									"});\r",
+									"\r",
+									"// Validar las propiedades principales del primer carrito\r",
+									"const firstCart = pm.response.json()[0];\r",
+									"pm.test(\"First cart contains expected properties\", function () {\r",
+									"    pm.expect(firstCart).to.have.property(\"id\");\r",
+									"    pm.expect(firstCart).to.have.property(\"userId\");\r",
+									"    pm.expect(firstCart).to.have.property(\"date\");\r",
+									"    pm.expect(firstCart).to.have.property(\"products\");\r",
+									"    pm.expect(firstCart).to.have.property(\"__v\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el campo `products` sea un array\r",
+									"pm.test(\"Products is an array in the first cart\", function () {\r",
+									"    pm.expect(firstCart.products).to.be.an(\"array\");\r",
+									"    pm.expect(firstCart.products.length).to.be.above(0); // Debe contener al menos un producto\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta sea menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{carts_path}}",
+							"host": [
+								"{{base_url}}{{carts_path}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cart by Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Validar el body contiene las propiedades esperadas\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(\"Response contains expected properties\", function () {\r",
+									"    pm.expect(responseBody).to.have.property(\"id\", 5);\r",
+									"    pm.expect(responseBody).to.have.property(\"userId\", 3);\r",
+									"    pm.expect(responseBody).to.have.property(\"date\", \"2020-03-01T00:00:00.000Z\");\r",
+									"    pm.expect(responseBody).to.have.property(\"products\").that.is.an(\"array\");\r",
+									"    pm.expect(responseBody).to.have.property(\"__v\", 0);\r",
+									"});\r",
+									"\r",
+									"// Validar que `products` contiene exactamente 2 elementos\r",
+									"pm.test(\"Products array has correct length\", function () {\r",
+									"    pm.expect(responseBody.products).to.have.lengthOf(2);\r",
+									"});\r",
+									"\r",
+									"// Validar los productos en el array\r",
+									"pm.test(\"Products array contains expected objects\", function () {\r",
+									"    const product1 = responseBody.products[0];\r",
+									"    const product2 = responseBody.products[1];\r",
+									"\r",
+									"    pm.expect(product1).to.include({ productId: 7, quantity: 1 });\r",
+									"    pm.expect(product2).to.include({ productId: 8, quantity: 1 });\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta es menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{carts_path}}/5",
+							"host": [
+								"{{base_url}}{{carts_path}}"
+							],
+							"path": [
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Carts Results Limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Obtener el valor dinámico de limit desde la URL\r",
+									"const limit = pm.request.url.query.find(q => q.key === \"limit\").value;\r",
+									"\r",
+									"// Validar que el body es un array con `limit` elementos\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(`Response is an array with ${limit} elements`, function () {\r",
+									"    pm.expect(responseBody).to.be.an(\"array\").with.lengthOf(parseInt(limit, 10));\r",
+									"});\r",
+									"\r",
+									"// Validar que cada carrito tiene las propiedades esperadas\r",
+									"pm.test(\"Each cart contains expected properties\", function () {\r",
+									"    responseBody.forEach(cart => {\r",
+									"        pm.expect(cart).to.have.property(\"id\");\r",
+									"        pm.expect(cart).to.have.property(\"userId\");\r",
+									"        pm.expect(cart).to.have.property(\"date\");\r",
+									"        pm.expect(cart).to.have.property(\"products\").that.is.an(\"array\");\r",
+									"        pm.expect(cart).to.have.property(\"__v\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta es menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{carts_path}}?limit=3",
+							"host": [
+								"{{base_url}}{{carts_path}}"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sort Results",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Obtener el valor dinámico del parámetro `sort` desde la URL\r",
+									"const sort = pm.request.url.query.find(q => q.key === \"sort\").value;\r",
+									"\r",
+									"// Validar que el body es un array\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    pm.expect(responseBody).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el array está ordenado correctamente según el valor de `sort`\r",
+									"pm.test(`Response is sorted in ${sort} order`, function () {\r",
+									"    const ids = responseBody.map(cart => cart.id);\r",
+									"\r",
+									"    if (sort === \"asc\") {\r",
+									"        // Validar orden ascendente\r",
+									"        for (let i = 1; i < ids.length; i++) {\r",
+									"            pm.expect(ids[i]).to.be.at.least(ids[i - 1]);\r",
+									"        }\r",
+									"    } else if (sort === \"desc\") {\r",
+									"        // Validar orden descendente\r",
+									"        for (let i = 1; i < ids.length; i++) {\r",
+									"            pm.expect(ids[i]).to.be.at.most(ids[i - 1]);\r",
+									"        }\r",
+									"    } else {\r",
+									"        throw new Error(`Invalid sort value: ${sort}`);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Validar que cada carrito contiene las propiedades esperadas\r",
+									"pm.test(\"Each cart contains expected properties\", function () {\r",
+									"    responseBody.forEach(cart => {\r",
+									"        pm.expect(cart).to.have.property(\"id\");\r",
+									"        pm.expect(cart).to.have.property(\"userId\");\r",
+									"        pm.expect(cart).to.have.property(\"date\");\r",
+									"        pm.expect(cart).to.have.property(\"products\").that.is.an(\"array\");\r",
+									"        pm.expect(cart).to.have.property(\"__v\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta es menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{carts_path}}?sort=desc",
+							"host": [
+								"{{base_url}}{{carts_path}}"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Carts by Date Range",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Obtener valores dinámicos de startdate y enddate desde la URL\r",
+									"const startdate = pm.request.url.query.find(q => q.key === \"startdate\").value;\r",
+									"const enddate = pm.request.url.query.find(q => q.key === \"enddate\").value;\r",
+									"\r",
+									"// Validar que el body es un array\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    pm.expect(responseBody).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Validar que las fechas de los carritos están dentro del rango [startdate, enddate]\r",
+									"pm.test(`All cart dates are between ${startdate} and ${enddate}`, function () {\r",
+									"    const start = new Date(startdate);\r",
+									"    const end = new Date(enddate);\r",
+									"\r",
+									"    responseBody.forEach(cart => {\r",
+									"        const cartDate = new Date(cart.date);\r",
+									"        pm.expect(cartDate).to.be.within(start, end);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar que cada carrito contiene las propiedades esperadas\r",
+									"pm.test(\"Each cart contains expected properties\", function () {\r",
+									"    responseBody.forEach(cart => {\r",
+									"        pm.expect(cart).to.have.property(\"id\");\r",
+									"        pm.expect(cart).to.have.property(\"userId\");\r",
+									"        pm.expect(cart).to.have.property(\"date\");\r",
+									"        pm.expect(cart).to.have.property(\"products\").that.is.an(\"array\");\r",
+									"        pm.expect(cart).to.have.property(\"__v\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta es menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{carts_path}}?startdate=2019-12-10&enddate=2020-10-10",
+							"host": [
+								"{{base_url}}{{carts_path}}"
+							],
+							"query": [
+								{
+									"key": "startdate",
+									"value": "2019-12-10"
+								},
+								{
+									"key": "enddate",
+									"value": "2020-10-10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Carts by User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Obtener el body de la respuesta\r",
+									"const responseBody = pm.response.json();\r",
+									"\r",
+									"// Validar que el body es un array\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    pm.expect(responseBody).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el array tiene al menos un carrito\r",
+									"pm.test(\"At least one cart exists\", function () {\r",
+									"    pm.expect(responseBody.length).to.be.greaterThan(0);\r",
+									"});\r",
+									"\r",
+									"// Validar la estructura de cada carrito\r",
+									"pm.test(\"Each cart contains expected properties\", function () {\r",
+									"    responseBody.forEach(cart => {\r",
+									"        pm.expect(cart).to.have.property(\"id\");\r",
+									"        pm.expect(cart).to.have.property(\"userId\", 2);\r",
+									"        pm.expect(cart).to.have.property(\"date\");\r",
+									"        pm.expect(cart).to.have.property(\"products\").that.is.an(\"array\");\r",
+									"        pm.expect(cart).to.have.property(\"__v\", 0);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar la estructura de los productos dentro del carrito\r",
+									"pm.test(\"Each product contains expected properties\", function () {\r",
+									"    responseBody.forEach(cart => {\r",
+									"        cart.products.forEach(product => {\r",
+									"            pm.expect(product).to.have.property(\"productId\");\r",
+									"            pm.expect(product).to.have.property(\"quantity\");\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta es menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{carts_path}}/user/2",
+							"host": [
+								"{{base_url}}{{carts_path}}"
+							],
+							"path": [
+								"user",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add a New Card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Obtener el body de la respuesta\r",
+									"const responseBody = pm.response.json();\r",
+									"\r",
+									"// Validar que el body contiene las propiedades esperadas\r",
+									"pm.test(\"Response body contains expected properties\", function () {\r",
+									"    pm.expect(responseBody).to.have.property(\"id\").that.is.a(\"number\").and.is.greaterThan(0);\r",
+									"    pm.expect(responseBody).to.have.property(\"userId\", 5);\r",
+									"    pm.expect(responseBody).to.have.property(\"date\", \"2020-02-03\");\r",
+									"    pm.expect(responseBody).to.have.property(\"products\").that.is.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Validar que los productos en la respuesta coinciden con los enviados\r",
+									"pm.test(\"Products match the input\", function () {\r",
+									"    const expectedProducts = [\r",
+									"        {\"productId\": 5, \"quantity\": 1},\r",
+									"        {\"productId\": 1, \"quantity\": 5}\r",
+									"    ];\r",
+									"    pm.expect(responseBody.products).to.deep.equal(expectedProducts);\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta es menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\":5,\r\n    \"date\":\"2020-02-03\",\r\n    \"products\":[{\"productId\":5,\"quantity\":1},{\"productId\":1,\"quantity\":5}]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{carts_path}}",
+							"host": [
+								"{{base_url}}{{carts_path}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Obtener el body de la respuesta\r",
+									"const responseBody = pm.response.json();\r",
+									"\r",
+									"// Validar que el body contiene las propiedades esperadas\r",
+									"pm.test(\"Response body contains expected properties\", function () {\r",
+									"    pm.expect(responseBody).to.have.property(\"id\", 6);\r",
+									"    pm.expect(responseBody).to.have.property(\"userId\", 4);\r",
+									"    pm.expect(responseBody).to.have.property(\"date\", \"2020-03-01T00:00:00.000Z\");\r",
+									"    pm.expect(responseBody).to.have.property(\"products\").that.is.an(\"array\").with.lengthOf(2);\r",
+									"    pm.expect(responseBody).to.have.property(\"__v\", 0);\r",
+									"});\r",
+									"\r",
+									"// Validar que los productos en la respuesta coinciden con los esperados\r",
+									"pm.test(\"Products match the deleted cart\", function () {\r",
+									"    const expectedProducts = [\r",
+									"        {\"productId\": 10, \"quantity\": 2},\r",
+									"        {\"productId\": 12, \"quantity\": 3}\r",
+									"    ];\r",
+									"    pm.expect(responseBody.products).to.deep.equal(expectedProducts);\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta es menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									"\r",
+									"// Validar que el carrito no existe después del DELETE\r",
+									"pm.sendRequest({\r",
+									"    url: \"{{base_url}}/carts/6\",\r",
+									"    method: \"GET\"\r",
+									"}, function (err, res) {\r",
+									"    pm.test(\"Deleted cart does not exist\", function () {\r",
+									"        pm.expect(res.code).to.equal(404); // Asume que un carrito no encontrado devuelve 404\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{carts_path}}/6",
+							"host": [
+								"{{base_url}}{{carts_path}}"
+							],
+							"path": [
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Tests",
+			"item": [
+				{
+					"name": "Get All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Obtener el body de la respuesta\r",
+									"const users = pm.response.json();\r",
+									"\r",
+									"// Validar que la respuesta es un array\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    pm.expect(users).to.be.an(\"array\").with.length.greaterThan(1);\r",
+									"});\r",
+									"\r",
+									"// Validar que cada usuario tiene las propiedades esperadas\r",
+									"users.forEach(user => {\r",
+									"    pm.test(\"User has required properties\", function () {\r",
+									"        pm.expect(user).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"        pm.expect(user).to.have.property(\"email\").that.is.a(\"string\").and.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);\r",
+									"        pm.expect(user).to.have.property(\"username\").that.is.a(\"string\");\r",
+									"        pm.expect(user).to.have.property(\"password\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user).to.have.property(\"name\").that.is.an(\"object\");\r",
+									"        pm.expect(user.name).to.have.property(\"firstname\").that.is.a(\"string\");\r",
+									"        pm.expect(user.name).to.have.property(\"lastname\").that.is.a(\"string\");\r",
+									"        pm.expect(user).to.have.property(\"address\").that.is.an(\"object\");\r",
+									"        pm.expect(user.address).to.have.property(\"geolocation\").that.is.an(\"object\");\r",
+									"        pm.expect(user.address.geolocation).to.have.property(\"lat\").that.is.a(\"string\");\r",
+									"        pm.expect(user.address.geolocation).to.have.property(\"long\").that.is.a(\"string\");\r",
+									"        pm.expect(user.address).to.have.property(\"city\").that.is.a(\"string\");\r",
+									"        pm.expect(user.address).to.have.property(\"street\").that.is.a(\"string\");\r",
+									"        pm.expect(user.address).to.have.property(\"number\").that.is.a(\"number\");\r",
+									"        pm.expect(user.address).to.have.property(\"zipcode\").that.is.a(\"string\");\r",
+									"        pm.expect(user).to.have.property(\"phone\").that.is.a(\"string\");\r",
+									"        pm.expect(user).to.have.property(\"__v\").that.is.a(\"number\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta es menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{users_path}}",
+							"host": [
+								"{{base_url}}{{users_path}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a Single User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Obtener el body de la respuesta\r",
+									"const user = pm.response.json();\r",
+									"\r",
+									"// Validar que el ID es igual a 1\r",
+									"pm.test(\"User ID is 1\", function () {\r",
+									"    pm.expect(user.id).to.equal(1);\r",
+									"});\r",
+									"\r",
+									"// Validar que las propiedades obligatorias existen y tienen valores válidos\r",
+									"pm.test(\"User has required properties\", function () {\r",
+									"    pm.expect(user).to.have.property(\"email\").that.is.a(\"string\").and.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);\r",
+									"    pm.expect(user).to.have.property(\"username\").that.is.a(\"string\").and.not.empty;\r",
+									"    pm.expect(user).to.have.property(\"password\").that.is.a(\"string\").and.not.empty;\r",
+									"    pm.expect(user).to.have.property(\"name\").that.is.an(\"object\");\r",
+									"    pm.expect(user.name).to.have.property(\"firstname\").that.is.a(\"string\").and.not.empty;\r",
+									"    pm.expect(user.name).to.have.property(\"lastname\").that.is.a(\"string\").and.not.empty;\r",
+									"    pm.expect(user).to.have.property(\"address\").that.is.an(\"object\");\r",
+									"    pm.expect(user.address).to.have.property(\"geolocation\").that.is.an(\"object\");\r",
+									"    pm.expect(user.address.geolocation).to.have.property(\"lat\").that.is.a(\"string\");\r",
+									"    pm.expect(user.address.geolocation).to.have.property(\"long\").that.is.a(\"string\");\r",
+									"    pm.expect(user.address).to.have.property(\"city\").that.is.a(\"string\").and.not.empty;\r",
+									"    pm.expect(user.address).to.have.property(\"street\").that.is.a(\"string\").and.not.empty;\r",
+									"    pm.expect(user.address).to.have.property(\"number\").that.is.a(\"number\");\r",
+									"    pm.expect(user.address).to.have.property(\"zipcode\").that.is.a(\"string\");\r",
+									"    pm.expect(user).to.have.property(\"phone\").that.is.a(\"string\").and.not.empty;\r",
+									"    pm.expect(user).to.have.property(\"__v\").that.is.a(\"number\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta es menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{users_path}}/1",
+							"host": [
+								"{{base_url}}{{users_path}}"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Limit Results",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Obtener el body de la respuesta\r",
+									"const users = pm.response.json();\r",
+									"const limit = pm.request.url.query.find(param => param.key === \"limit\").value;\r",
+									"\r",
+									"// Validar que la cantidad de usuarios sea igual al límite\r",
+									"pm.test(`Number of users is equal to limit (${limit})`, function () {\r",
+									"    pm.expect(users.length).to.equal(parseInt(limit, 10));\r",
+									"});\r",
+									"\r",
+									"// Validar propiedades de cada usuario\r",
+									"users.forEach((user, index) => {\r",
+									"    pm.test(`User ${index + 1} has valid properties`, function () {\r",
+									"        pm.expect(user).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"        pm.expect(user).to.have.property(\"email\").that.is.a(\"string\").and.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);\r",
+									"        pm.expect(user).to.have.property(\"username\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user).to.have.property(\"password\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user).to.have.property(\"name\").that.is.an(\"object\");\r",
+									"        pm.expect(user.name).to.have.property(\"firstname\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user.name).to.have.property(\"lastname\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user).to.have.property(\"address\").that.is.an(\"object\");\r",
+									"        pm.expect(user.address).to.have.property(\"geolocation\").that.is.an(\"object\");\r",
+									"        pm.expect(user.address.geolocation).to.have.property(\"lat\").that.is.a(\"string\");\r",
+									"        pm.expect(user.address.geolocation).to.have.property(\"long\").that.is.a(\"string\");\r",
+									"        pm.expect(user.address).to.have.property(\"city\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user.address).to.have.property(\"street\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user.address).to.have.property(\"number\").that.is.a(\"number\");\r",
+									"        pm.expect(user.address).to.have.property(\"zipcode\").that.is.a(\"string\");\r",
+									"        pm.expect(user).to.have.property(\"phone\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user).to.have.property(\"__v\").that.is.a(\"number\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta es menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{users_path}}?limit=5",
+							"host": [
+								"{{base_url}}{{users_path}}"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sort Results",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Obtener el body de la respuesta\r",
+									"const users = pm.response.json();\r",
+									"const sortOrder = pm.request.url.query.find(param => param.key === \"sort\").value;\r",
+									"\r",
+									"// Validar que el body es un array\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    pm.expect(users).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Validar el orden según el parámetro sort\r",
+									"pm.test(`Users are sorted in ${sortOrder} order`, function () {\r",
+									"    const ids = users.map(user => user.id);\r",
+									"    const sortedIds = sortOrder === \"asc\" ? [...ids].sort((a, b) => a - b) : [...ids].sort((a, b) => b - a);\r",
+									"    pm.expect(ids).to.eql(sortedIds);\r",
+									"});\r",
+									"\r",
+									"// Validar propiedades de cada usuario\r",
+									"users.forEach((user, index) => {\r",
+									"    pm.test(`User ${index + 1} has valid properties`, function () {\r",
+									"        pm.expect(user).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"        pm.expect(user).to.have.property(\"email\").that.is.a(\"string\").and.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);\r",
+									"        pm.expect(user).to.have.property(\"username\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user).to.have.property(\"password\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user).to.have.property(\"name\").that.is.an(\"object\");\r",
+									"        pm.expect(user.name).to.have.property(\"firstname\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user.name).to.have.property(\"lastname\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user).to.have.property(\"address\").that.is.an(\"object\");\r",
+									"        pm.expect(user.address).to.have.property(\"geolocation\").that.is.an(\"object\");\r",
+									"        pm.expect(user.address.geolocation).to.have.property(\"lat\").that.is.a(\"string\");\r",
+									"        pm.expect(user.address.geolocation).to.have.property(\"long\").that.is.a(\"string\");\r",
+									"        pm.expect(user.address).to.have.property(\"city\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user.address).to.have.property(\"street\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user.address).to.have.property(\"number\").that.is.a(\"number\");\r",
+									"        pm.expect(user.address).to.have.property(\"zipcode\").that.is.a(\"string\");\r",
+									"        pm.expect(user).to.have.property(\"phone\").that.is.a(\"string\").and.not.empty;\r",
+									"        pm.expect(user).to.have.property(\"__v\").that.is.a(\"number\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar que el tiempo de respuesta es menor a 2 segundos\r",
+									"pm.test(\"Response time is less than 2s\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{users_path}}?sort=desc",
+							"host": [
+								"{{base_url}}{{users_path}}"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Validar el body de la respuesta\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(\"Response contains a valid id\", function () {\r",
+									"    pm.expect(responseBody).to.have.property(\"id\").that.is.a(\"number\").and.is.above(0);\r",
+									"});\r",
+									"\r",
+									"// Realizar una solicitud GET para validar persistencia de datos\r",
+									"pm.sendRequest({\r",
+									"    url: `{{base_url}}/users/${responseBody.id}`,\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    pm.test(\"User data is persisted\", function () {\r",
+									"        pm.expect(res).to.have.status(200);\r",
+									"        const userData = res.json();\r",
+									"        pm.expect(userData).to.have.property(\"email\", \"John@gmail.com\");\r",
+									"        pm.expect(userData).to.have.property(\"username\", \"johnd\");\r",
+									"        pm.expect(userData).to.have.property(\"name\");\r",
+									"        pm.expect(userData.name).to.have.property(\"firstname\", \"John\");\r",
+									"        pm.expect(userData.name).to.have.property(\"lastname\", \"Doe\");\r",
+									"        pm.expect(userData).to.have.property(\"address\");\r",
+									"        pm.expect(userData.address).to.have.property(\"city\", \"kilcoole\");\r",
+									"        pm.expect(userData.address).to.have.property(\"street\", \"7835 new road\");\r",
+									"        pm.expect(userData.address).to.have.property(\"number\", 3);\r",
+									"        pm.expect(userData.address).to.have.property(\"zipcode\", \"12926-3874\");\r",
+									"        pm.expect(userData.address.geolocation).to.have.property(\"lat\", \"-37.3159\");\r",
+									"        pm.expect(userData.address.geolocation).to.have.property(\"long\", \"81.1496\");\r",
+									"        pm.expect(userData).to.have.property(\"phone\", \"1-570-236-7033\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar el tiempo de respuesta\r",
+									"pm.test(\"Response time is less than 2 seconds\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"John@gmail.com\",\r\n    \"username\":\"johnd\",\r\n    \"password\":\"m38rmF$\",\r\n    \"name\":{\r\n        \"firstname\":\"John\",\r\n        \"lastname\":\"Doe\"\r\n    },\r\n    \"address\":{\r\n        \"city\":\"kilcoole\",\r\n        \"street\":\"7835 new road\",\r\n        \"number\":3,\r\n        \"zipcode\":\"12926-3874\",\r\n        \"geolocation\":{\r\n            \"lat\":\"-37.3159\",\r\n            \"long\":\"81.1496\"\r\n        }\r\n    },\r\n    \"phone\":\"1-570-236-7033\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{users_path}}",
+							"host": [
+								"{{base_url}}{{users_path}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Validar que la respuesta contiene los datos actualizados\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(\"Response contains updated user data\", function () {\r",
+									"    pm.expect(responseBody).to.have.property(\"email\", \"John@gmail.com\");\r",
+									"    pm.expect(responseBody).to.have.property(\"username\", \"johnd\");\r",
+									"    pm.expect(responseBody).to.have.property(\"password\", \"m38rmF$\");\r",
+									"    pm.expect(responseBody.name).to.have.property(\"firstname\", \"John\");\r",
+									"    pm.expect(responseBody.name).to.have.property(\"lastname\", \"Doe\");\r",
+									"    pm.expect(responseBody.address).to.have.property(\"city\", \"kilcoole\");\r",
+									"    pm.expect(responseBody.address).to.have.property(\"street\", \"7835 new road\");\r",
+									"    pm.expect(responseBody.address).to.have.property(\"number\", 3);\r",
+									"    pm.expect(responseBody.address).to.have.property(\"zipcode\", \"12926-3874\");\r",
+									"    pm.expect(responseBody.address.geolocation).to.have.property(\"lat\", \"-37.3159\");\r",
+									"    pm.expect(responseBody.address.geolocation).to.have.property(\"long\", \"81.1496\");\r",
+									"    pm.expect(responseBody).to.have.property(\"phone\", \"1-570-236-7033\");\r",
+									"});\r",
+									"\r",
+									"// Realizar una solicitud GET para validar la persistencia de datos\r",
+									"pm.sendRequest({\r",
+									"    url: `{{base_url}}/users/7`,\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    pm.test(\"Updated data is persisted\", function () {\r",
+									"        pm.expect(res).to.have.status(200);\r",
+									"        const userData = res.json();\r",
+									"        pm.expect(userData).to.deep.equal(responseBody);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar el tiempo de respuesta\r",
+									"pm.test(\"Response time is less than 2 seconds\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"email\":\"John@gmail.com\",\r\n\"username\":\"johnd\",\r\n\"password\":\"m38rmF$\",\r\n\"name\":{\r\n    \"firstname\":\"John\",\r\n    \"lastname\":\"Doe\"\r\n},\r\n\"address\":{\r\n    \"city\":\"kilcoole\",\r\n    \"street\":\"7835 new road\",\r\n    \"number\":3,\r\n    \"zipcode\":\"12926-3874\",\r\n    \"geolocation\":{\r\n        \"lat\":\"-37.3159\",\r\n        \"long\":\"81.1496\"\r\n    }\r\n},\r\n\"phone\":\"1-570-236-7033\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{users_path}}/7",
+							"host": [
+								"{{base_url}}{{users_path}}"
+							],
+							"path": [
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Validar que la respuesta contiene los datos del usuario eliminado\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(\"Response contains deleted user data\", function () {\r",
+									"    pm.expect(responseBody).to.have.property(\"id\", 6);\r",
+									"    pm.expect(responseBody).to.have.property(\"email\", \"david_r@gmail.com\");\r",
+									"    pm.expect(responseBody).to.have.property(\"username\", \"david_r\");\r",
+									"    pm.expect(responseBody).to.have.property(\"password\", \"3478*#54\");\r",
+									"    pm.expect(responseBody.name).to.have.property(\"firstname\", \"david\");\r",
+									"    pm.expect(responseBody.name).to.have.property(\"lastname\", \"russell\");\r",
+									"    pm.expect(responseBody.address).to.have.property(\"city\", \"el paso\");\r",
+									"    pm.expect(responseBody.address).to.have.property(\"street\", \"prospect st\");\r",
+									"    pm.expect(responseBody.address).to.have.property(\"number\", 124);\r",
+									"    pm.expect(responseBody.address).to.have.property(\"zipcode\", \"12346-0456\");\r",
+									"    pm.expect(responseBody.address.geolocation).to.have.property(\"lat\", \"20.1677\");\r",
+									"    pm.expect(responseBody.address.geolocation).to.have.property(\"long\", \"-10.6789\");\r",
+									"});\r",
+									"\r",
+									"// Realizar una solicitud GET para validar que el usuario ha sido eliminado\r",
+									"pm.sendRequest({\r",
+									"    url: `{{base_url}}/users/6`,\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    pm.test(\"User is no longer available after deletion\", function () {\r",
+									"        pm.expect(res).to.have.status(404);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validar el tiempo de respuesta\r",
+									"pm.test(\"Response time is less than 2 seconds\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{users_path}}/6",
+							"host": [
+								"{{base_url}}{{users_path}}"
+							],
+							"path": [
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login Request",
+			"item": [
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validar el código de estado HTTP\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar el Content-Type\r",
+									"pm.test(\"Response has Content-Type as application/json\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el body contiene un token\r",
+									"const responseBody = pm.response.json();\r",
+									"pm.test(\"Response contains a token\", function () {\r",
+									"    pm.expect(responseBody).to.have.property(\"token\");\r",
+									"    pm.expect(responseBody.token).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"// Validar que el token tiene el formato JWT\r",
+									"pm.test(\"Token has JWT format\", function () {\r",
+									"    const tokenParts = responseBody.token.split(\".\");\r",
+									"    pm.expect(tokenParts.length).to.equal(3); // JWT debe tener tres secciones separadas por puntos\r",
+									"});\r",
+									"\r",
+									"// Validar el tiempo de respuesta\r",
+									"pm.test(\"Response time is less than 2 seconds\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"mor_2314\",\r\n    \"password\": \"83r5^_\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://fakestoreapi.com",
+			"type": "string"
+		},
+		{
+			"key": "products_path",
+			"value": "/products",
+			"type": "string"
+		},
+		{
+			"key": "carts_path",
+			"value": "/carts",
+			"type": "string"
+		},
+		{
+			"key": "users_path",
+			"value": "/users",
+			"type": "string"
+		}
+	]
+}
